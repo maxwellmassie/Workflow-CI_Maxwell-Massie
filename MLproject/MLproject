@@ -1,0 +1,13 @@
+name: mpg-prediction-mlflow
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      # Parameter yang dapat diatur saat menjalankan proyek
+      n_estimators: {type: int, default: 100}
+      max_depth: {type: int, default: 10}
+      dataset : {type: string, default: "auto-mpg_preprocessed.csv"}
+    # Perintah untuk menjalankan modelling.py dan meneruskan parameter
+    command: "python modelling.py {n_estimators} {max_depth} {dataset}"
