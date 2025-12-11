@@ -1,0 +1,15 @@
+artifact_uri: file:///home/runner/work/Workflow-CI_Maxwell-Massie/Workflow-CI_Maxwell-Massie/mlruns/0/2e4188f22872466f969481b7fb7bc824/artifacts
+end_time: 1765459836513
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2e4188f22872466f969481b7fb7bc824
+run_name: enchanting-hound-184
+run_uuid: 2e4188f22872466f969481b7fb7bc824
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1765459787234
+status: 3
+tags: []
+user_id: runner

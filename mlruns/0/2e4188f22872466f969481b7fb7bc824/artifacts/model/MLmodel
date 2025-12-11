@@ -1,0 +1,34 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.7
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 2.19.0
+model_size_bytes: 2123467
+model_uuid: ba93f4b01815493f9e3a92da4ad24aee
+run_id: 2e4188f22872466f969481b7fb7bc824
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "cylinders", "required": true}, {"type": "double",
+    "name": "displacement", "required": true}, {"type": "double", "name": "horsepower",
+    "required": true}, {"type": "double", "name": "weight", "required": true}, {"type":
+    "double", "name": "acceleration", "required": true}, {"type": "double", "name":
+    "model year", "required": true}, {"type": "double", "name": "origin", "required":
+    true}]'
+  outputs: '[{"type": "double", "required": true}]'
+  params: null
+utc_time_created: '2025-12-11 13:30:32.966806'
