@@ -19,16 +19,16 @@ jobs:
     
     steps:
       # 1. Checkout Kode
-      - name: Checks out repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Conda dan Install Dependencies
+      # 2. Setup Conda
       - name: Set up Conda & Install Dependencies
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          python-version: '3.12.7' 
-          activate-environment: ${{ env.CONDA_ENV_NAME }} 
+          python-version: '3.12.7'
+          activate-environment: ${{ env.CONDA_ENV_NAME }}
           environment-file: ${{ env.CONDA_ENV_PATH }}
           auto-activate-base: false
 
@@ -51,42 +51,43 @@ jobs:
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
           echo "Latest run_id: $RUN_ID"
 
-      # 5. Build Docker Model
+      # 5. Push MLflow Artifacts to Repo
+      - name: Push MLflow Artifacts to Repo
+        run: |
+          # Set author commit
+          git config --global user.name "maxwell-github-actions[bot]"
+          git config --global user.email "maxwell[bot]@users.noreply.github.com"
+
+          # Add mlruns (force)
+          git add -f mlruns/
+
+          # Commit jika ada perubahan
+          git commit -m "Add MLflow artifacts for run $RUN_ID" || echo "No changes to commit"
+
+          # Push menggunakan GITHUB_TOKEN
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+
+      # 6. Build Docker Model
       - name: Build Docker Model
         run: |
           conda run -n ${{ env.CONDA_ENV_NAME }} mlflow models build-docker \
             --model-uri "runs:/$RUN_ID/model" \
             --name ${{ env.DOCKER_IMAGE_NAME }}
 
-      # 6. Login to Docker Hub
+      # 7. Login Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # 7. Tag Docker Image
+      # 8. Tag Docker Image
       - name: Tag Docker Image
         run: |
-          docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+          docker tag ${{ env.DOCKER_IMAGE_NAME }} \
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
 
-      # 8. Push Docker Image
+      # 9. Push Docker Image to Docker Hub
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:latest
-
-      # Commit & Push Artifact ke Repository
-      - name: Push MLflow Artifacts to Repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add mlruns/
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git commit -m "Add MLflow artifacts for run $RUN_ID"
-          git push
